@@ -1,3 +1,4 @@
+import { BottomSheet } from '@alfalab/core-components/bottom-sheet';
 import { ButtonMobile } from '@alfalab/core-components/button/mobile';
 import { Collapse } from '@alfalab/core-components/collapse';
 import { Gap } from '@alfalab/core-components/gap';
@@ -5,6 +6,7 @@ import { PureCell } from '@alfalab/core-components/pure-cell';
 import { Typography } from '@alfalab/core-components/typography';
 import { ChevronDownMIcon } from '@alfalab/icons-glyph/ChevronDownMIcon';
 import { ChevronUpMIcon } from '@alfalab/icons-glyph/ChevronUpMIcon';
+import { InformationCircleMIcon } from '@alfalab/icons-glyph/InformationCircleMIcon';
 import { useEffect, useState } from 'react';
 import hb from './assets/hb.png';
 import heart from './assets/heart.png';
@@ -40,13 +42,15 @@ const faqs = [
   },
 ];
 
-// if (LS.getItem(LSKeys.ShowThx, false)) {
-//    window.location.replace('');
-// }
+const LINK = 'alfabank://longread?endpoint=v1/adviser/longreads/60715';
 
+if (LS.getItem(LSKeys.ShowThx, false)) {
+  window.location.replace(LINK);
+}
 export const App = () => {
   const [loading, setLoading] = useState(false);
   const [collapsedItems, setCollapsedItem] = useState<string[]>([]);
+  const [openInfo, setOpenInfo] = useState(false);
 
   useEffect(() => {
     if (!LS.getItem(LSKeys.UserId, null)) {
@@ -60,7 +64,7 @@ export const App = () => {
 
     LS.setItem(LSKeys.ShowThx, true);
     setLoading(false);
-    // window.location.replace('')
+    window.location.replace(LINK);
   };
 
   return (
@@ -87,7 +91,7 @@ export const App = () => {
           Что вы получите
         </Typography.TitleResponsive>
 
-        <PureCell className={appSt.cell}>
+        <PureCell className={appSt.cell} onClick={() => setOpenInfo(!openInfo)}>
           <PureCell.Graphics verticalAlign="center">
             <img src={house} width={48} height={48} alt="house" />
           </PureCell.Graphics>
@@ -98,10 +102,13 @@ export const App = () => {
               </Typography.TitleResponsive>
 
               <Typography.Text view="primary-small" color="secondary-inverted">
-                Все паи биржевых фондов Альфа-Капитал
+                Суммой до 500 000 ₽ в период действия подписки
               </Typography.Text>
             </PureCell.Main>
           </PureCell.Content>
+          <PureCell.Graphics verticalAlign="center">
+            <InformationCircleMIcon color="#FFFFFF" />
+          </PureCell.Graphics>
         </PureCell>
 
         <PureCell className={appSt.cell}>
@@ -195,6 +202,31 @@ export const App = () => {
           Попробовать бесплатно
         </ButtonMobile>
       </div>
+
+      <BottomSheet
+        open={openInfo}
+        onClose={() => {
+          setOpenInfo(false);
+        }}
+        contentClassName={appSt.btmContent}
+      >
+        <div className={appSt.container} style={{ marginTop: '1rem' }}>
+          <Typography.Text view="primary-medium" tag="p" defaultMargins={false} color="primary-inverted">
+            Распространяется только на сделки покупки-продажи ценных бумаг на биржевых рынках Московской биржи. Плата за все
+            иные операции с ценными бумагами и иностранной валютой взимается согласно тарифному плану
+          </Typography.Text>
+          <ButtonMobile
+            block
+            view="primary"
+            onClick={() => {
+              setOpenInfo(false);
+            }}
+            style={{ backgroundColor: '#1C1C1E' }}
+          >
+            Понятно
+          </ButtonMobile>
+        </div>
+      </BottomSheet>
     </>
   );
 };
